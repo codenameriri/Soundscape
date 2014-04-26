@@ -28,7 +28,7 @@ IntList pulseHist, levelHist;
 
 // Timekeeping
 int BEATS_PER_MEASURE = 4;
-int MEASURES_PER_PHASE = 8;
+int MEASURES_PER_PHASE = 4;
 int PHASES_PER_SONG = 4;
 int DELAY_THRESHOLD = 20;
 int beat, measure, phase, mils, lastMils, delay;
@@ -37,7 +37,7 @@ int beat, measure, phase, mils, lastMils, delay;
 int PITCH_C = 60;
 int PITCH_F = 65;
 int PITCH_G = 67;
-int[] SCALE = {0, 2, 4, 5, 7, 9};
+int[] SCALE = {0, 2, 4, 7, 9};
 float[] BEATS = {1, .5, .25, .125};
 int pitch;
 
@@ -65,7 +65,7 @@ void setup() {
 	channel5 = 4;
 	channel6 = 5;
 	// Data setup
-	pulse = 65;
+	pulse = 80;
 	bpm = pulse;
 	pulseHist = new IntList();
 	focusRelaxLevel = 0;
@@ -179,6 +179,9 @@ void playMusic() {
 			// Prepare the next measure
 			setMeasureLevelAndGrain();
 			setMeasureBPM();
+			if (measure == MEASURES_PER_PHASE) {
+				resetInstruments();
+			}
 			createMeasure();
 			/*if (useDummyData) {
 				String input = dummyDataGenerator.getInput("brainwave");
@@ -220,6 +223,18 @@ void createInstruments() {
 	bass = new RiriSequence(channel4);
 	synth1 = new RiriSequence(channel5);
 	synth2 = new RiriSequence(channel6);
+}
+
+void resetInstruments() {
+	stopMusic();
+	createInstruments();
+	kick.addRest(beatsToMils(1));
+	perc1.addRest(beatsToMils(1));
+	perc2.addRest(beatsToMils(1));
+	bass.addRest(beatsToMils(1));
+	synth1.addRest(beatsToMils(1));
+	synth2.addRest(beatsToMils(1));
+	startMusic();
 }
 
 void createMeasure() {
