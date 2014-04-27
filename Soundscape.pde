@@ -28,7 +28,7 @@ IntList pulseHist, levelHist;
 
 // Timekeeping
 int BEATS_PER_MEASURE = 4;
-int MEASURES_PER_PHASE = 4;
+int MEASURES_PER_PHASE = 8;
 int PHASES_PER_SONG = 4;
 int DELAY_THRESHOLD = 20;
 int beat, measure, phase, mils, lastMils, delay;
@@ -37,7 +37,9 @@ int beat, measure, phase, mils, lastMils, delay;
 int PITCH_C = 60;
 int PITCH_F = 65;
 int PITCH_G = 67;
-int[] SCALE = {0, 2, 4, 7, 9};
+int[] PENTATONIC_MAJOR = {0, 2, 4, 7, 9};
+int[] PENTATONIC_MINOR = {0, 3, 5, 7, 8};
+int[] SCALE = PENTATONIC_MAJOR;
 float[] BEATS = {1, .5, .25, .125};
 int pitch;
 
@@ -273,15 +275,83 @@ void createKickMeasure() { // Bass drum
 void createPerc1Measure() { // Hi-hat
 	int close = 42;
 	int open = 46;
+	int clap = 39;
 	// '2'
 	if (soundscape == '2') {
-		createRestMeasure(perc1);
+		if (level >= 0) {
+			if (grain == 1) {
+				perc1.addRest(beatsToMils(1));
+				perc1.addNote(clap, 120, beatsToMils(1));
+				perc1.addRest(beatsToMils(1));
+				perc1.addNote(clap, 120, beatsToMils(1));
+			}
+			else if (grain == 2) {
+				perc1.addRest(beatsToMils(1));
+				perc1.addNote(clap, 120, beatsToMils(.75));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+				perc1.addRest(beatsToMils(1));
+				perc1.addNote(clap, 120, beatsToMils(.75));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+				/*
+				perc1.addNote(close, 120, beatsToMils(1));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.5));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(1));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.5));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				*/
+			}
+			else if (grain == 3) {
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(close, 80, beatsToMils(.25));
+				perc1.addNote(clap, 120, beatsToMils(.25));
+			}
+			else {
+				createRestMeasure(perc1);
+				/*
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(close, 120, beatsToMils(.25));
+				perc1.addNote(open, 120, beatsToMils(.25));
+				*/
+			}
+		}
+		else {
+			createRestMeasure(perc1);
+		}
 	}
 	// '1' or default
 	else {
 		if (level >= 0) {
 			if (grain == 0) {
-				// Play a closed note every other measure
+				// Play a close note every other measure
 				for (int i = 0; i < BEATS_PER_MEASURE; i++) {
 					if (i % 2 == 1) {
 						perc1.addNote(close, 120, beatsToMils(1));
@@ -292,7 +362,7 @@ void createPerc1Measure() { // Hi-hat
 				}
 			}
 			else if (grain == 1) {
-				// Play a closed note every other measure
+				// Play a close note every other measure
 				for (int i = 0; i < BEATS_PER_MEASURE; i++) {
 					if (i == BEATS_PER_MEASURE - 1) {
 						perc1.addNote(close, 120, beatsToMils(.5));
@@ -329,7 +399,15 @@ void createPerc1Measure() { // Hi-hat
 void createPerc2Measure() { // Snare
 	// '2'
 	if (soundscape == '2') {
-		createRestMeasure(perc2);
+		if (level >= 0) {
+			perc2.addRest(beatsToMils(1));
+			perc2.addNote(40, 120, beatsToMils(1));
+			perc2.addRest(beatsToMils(1));
+			perc2.addNote(40, 120, beatsToMils(1));
+		}
+		else {
+			createRestMeasure(perc2);
+		}
 	}
 	// '1' or default
 	else {
@@ -378,7 +456,26 @@ void createPerc2Measure() { // Snare
 void createBassMeasure() { // Bass
 	// '2'
 	if (soundscape == '2') {
-		createRestMeasure(bass);
+		if (level >= -19) {
+			if (grain == 0 || grain == 1) {
+				// Random notes for now
+				for (int i = 0; i < 2; i++) {
+					int p1 = pitch + SCALE[(int) random(0, SCALE.length)] - 24;
+					bass.addNote(p1, 80, beatsToMils(2));
+				}
+			}
+			else {
+				// Random notes for now
+				for (int i = 0; i < 2; i++) {
+					int p1 = pitch + SCALE[(int) random(0, SCALE.length)] - 24;
+					bass.addNote(p1, 80, beatsToMils(.75));
+				}
+				bass.addNote(pitch + SCALE[0] - 24, 80, beatsToMils(2.5));
+			}
+		}
+		else {
+			createRestMeasure(bass);
+		}
 	}
 	// '1' or default
 	else {
@@ -575,8 +672,13 @@ void keyPressed() {
     	msg.send();
 	}
 	// Soundscape switching
-	if (key == '1' || key == '2') {
+	if (key == '1') {
 		soundscape = key;
+		SCALE = PENTATONIC_MAJOR;
+	}
+	if (key == '2') {
+		soundscape = key;
+		SCALE = PENTATONIC_MINOR;
 	}
 	// DEBUG
 	if (key == '0') {
