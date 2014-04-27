@@ -399,15 +399,15 @@ void createPerc1Measure() { // Hi-hat
 void createPerc2Measure() { // Snare
 	// '2'
 	if (soundscape == '2') {
-		if (level >= 0) {
+		//if (level >= 0) {
 			perc2.addRest(beatsToMils(1));
 			perc2.addNote(40, 120, beatsToMils(1));
 			perc2.addRest(beatsToMils(1));
 			perc2.addNote(40, 120, beatsToMils(1));
-		}
-		else {
-			createRestMeasure(perc2);
-		}
+		//}
+		//else {
+		//	createRestMeasure(perc2);
+		//}
 	}
 	// '1' or default
 	else {
@@ -456,8 +456,11 @@ void createPerc2Measure() { // Snare
 void createBassMeasure() { // Bass
 	// '2'
 	if (soundscape == '2') {
-		if (level >= -19) {
-			if (grain == 0 || grain == 1) {
+		int g = (level >= 0) ? grain : 0;
+		int velocity = (level >= 0) ? 80 + 10*grain : 80 - 10*grain;
+		//if (level >= -19) {
+			if (g == 0 || g == 1) {
+			//if (grain == 0 || grain == 1) {
 				// Random notes for now
 				for (int i = 0; i < 2; i++) {
 					int p1 = pitch + SCALE[(int) random(0, SCALE.length)] - 24;
@@ -472,10 +475,10 @@ void createBassMeasure() { // Bass
 				}
 				bass.addNote(pitch + SCALE[0] - 24, 80, beatsToMils(2.5));
 			}
-		}
-		else {
-			createRestMeasure(bass);
-		}
+		//}
+		//else {
+		//	createRestMeasure(bass);
+		//}
 	}
 	// '1' or default
 	else {
@@ -498,7 +501,43 @@ void createBassMeasure() { // Bass
 void createSynth1Measure() { // Arp
 	// '2'
 	if (soundscape == '2') {
-		createRestMeasure(synth1);
+		if (level <= 0) {
+			if (grain == 0) {
+				float interval = BEATS[grain];
+				for (int i = 0; i < BEATS_PER_MEASURE - 1; i++) {
+					int p1 = pitch + SCALE[(int) random(0, SCALE.length)];
+					synth1.addNote(p1, 80, beatsToMils(interval));
+				}
+				synth1.addNote(pitch, 80, beatsToMils(interval));
+			}  
+			else if (grain == 1) {
+				float interval = BEATS[grain];
+				int[] notes = {SCALE[0], SCALE[3], SCALE[0]+12, SCALE[3]};
+				for (int i = 0; i < BEATS_PER_MEASURE/interval; i++) {
+					int num = i%notes.length;
+					synth1.addNote(pitch + notes[num], 80, beatsToMils(interval));
+				}
+			}
+			else  if (grain == 2) {
+				float interval = BEATS[1];
+				int[] notes = {SCALE[0], SCALE[1], SCALE[3], SCALE[1], SCALE[3], SCALE[0]+12, SCALE[1]+12, SCALE[0]+12};
+				for (int i = 0; i < BEATS_PER_MEASURE/interval; i++) {
+					int num = i%notes.length;
+					synth1.addNote(pitch + notes[num], 80, beatsToMils(interval));
+				}
+			}
+			else {
+				float interval = BEATS[2];
+				int[] notes = {SCALE[0], SCALE[1], SCALE[3], SCALE[1], SCALE[3], SCALE[0]+12, SCALE[1]+12, SCALE[0]+12};
+				for (int i = 0; i < BEATS_PER_MEASURE/interval; i++) {
+					int num = i%notes.length;
+					synth1.addNote(pitch + notes[num], 80, beatsToMils(interval));
+				}
+			}
+		}
+		else {
+			createRestMeasure(synth1);
+		}
 	}
 	// '1' or default
 	else {
@@ -513,7 +552,6 @@ void createSynth1Measure() { // Arp
 					synth1.addNote(p1, 80, interval);
 				} 
 			}
-
 			// Arp - Grain 1 or higher
 			else {
 				int arpNotes[];
@@ -560,7 +598,21 @@ void createSynth1Measure() { // Arp
 void createSynth2Measure() { // Pad
 	// '2' 
 	if (soundscape == '2') {
-		createRestMeasure(synth2);
+		float interval = (level <= 0) ? BEATS[grain] : BEATS[0];
+		int velocity = (level <= 0) ? 80 + 10*grain : 80 - 20*grain;
+		//if (level <= 19) {
+			for (int i = 0; i < (BEATS_PER_MEASURE/interval) / BEATS_PER_MEASURE; i++) {
+				int p1 = pitch - 12;
+				int p2 = pitch + SCALE[(int) random(1, SCALE.length)] - 12;
+				RiriChord c1 = new RiriChord(channel6);
+				c1.addNote(p1, velocity, beatsToMils(interval*BEATS_PER_MEASURE));
+				c1.addNote(p2, velocity, beatsToMils(interval*BEATS_PER_MEASURE));
+				synth2.addChord(c1);
+			}
+		//}
+		//else {
+			//createRestMeasure(synth2);
+		//}
 	}
 	// '1' or default
 	else {
